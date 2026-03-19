@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Casino Tower</title>
+
+<style>
+body {
+    margin: 0;
+    background: linear-gradient(180deg, #0f172a, #020617);
+    font-family: Arial;
+    color: white;
+    text-align: center;
+}
+
+h1 {
+    margin: 20px;
+}
+
+#balance {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.tower {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    margin: 5px;
+}
+
+.box {
+    width: 80px;
+    height: 40px;
+    background: #1e293b;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.box:hover {
+    background: #334155;
+}
+
+.win {
+    background: #22c55e !important;
+}
+
+.lose {
+    background: #ef4444 !important;
+}
+
+button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: none;
+    background: gold;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎰 Casino Tower</h1>
+<div id="balance">💰 Solde : 100</div>
+
+<input type="number" id="bet" placeholder="Mise" value="10">
+<br>
+<button onclick="startGame()">Jouer</button>
+
+<div class="tower" id="tower"></div>
+
+<script>
+let balance = 100;
+let currentRow = 0;
+let playing = false;
+
+const tower = document.getElementById("tower");
+const balanceText = document.getElementById("balance");
+
+function startGame() {
+    const bet = parseInt(document.getElementById("bet").value);
+
+    if (bet > balance || bet <= 0) {
+        alert("Mise invalide");
+        return;
+    }
+
+    balance -= bet;
+    updateBalance();
+
+    tower.innerHTML = "";
+    currentRow = 0;
+    playing = true;
+
+    for (let i = 0; i < 6; i++) {
+        let row = document.createElement("div");
+        row.className = "row";
+
+        for (let j = 0; j < 3; j++) {
+            let box = document.createElement("div");
+            box.className = "box";
+            box.onclick = () => play(box, i, bet);
+            row.appendChild(box);
+        }
+
+        tower.appendChild(row);
+    }
+}
+
+function play(box, rowIndex, bet) {
+    if (!playing || rowIndex !== currentRow) return;
+
+    let lose = Math.random() < 0.33;
+
+    if (lose) {
+        box.classList.add("lose");
+        playing = false;
+        alert("💀 Perdu !");
+    } else {
+        box.classList.add("win");
+        currentRow++;
+
+        if (currentRow === 6) {
+            let gain = bet * 3;
+            balance += gain;
+            updateBalance();
+            playing = false;
+            alert("🔥 Gagné ! +" + gain);
+        }
+    }
+}
+
+function updateBalance() {
+    balanceText.innerText = "💰 Solde : " + balance;
+}
+</script>
+
+</body>
+</html>
